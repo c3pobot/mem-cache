@@ -3,7 +3,7 @@ const log = require('./logger')
 
 module.exports = class MemCache{
   constructor({ mongo, collection, cacheName, jsonOnly }){
-    if(!mongo || !collection || !dbName) throw `db info not provided`
+    if(!mongo || !collection) throw `db info not provided`
     this._mongo = mongo, this._collection = collection, this._cache_name = cacheName || collection
     this._map = new Map(), this._cache_ready = false, this._watch, this._json_only = jsonOnly
     this._init()

@@ -2,7 +2,7 @@
 const log = require('./logger')
 const { MongoClient } = require('mongodb')
 
-module.exports = class MongoConnect {
+class MongoConnect {
   constructor( connection_string, db_name ){
     if(!connection_string || !db_name) throw `no connection info provided`
     this._mongo = new MongoClient( connection_string ), this._mongo_ready = false, this._db_name = db_name
@@ -93,3 +93,4 @@ module.exports = class MongoConnect {
     }
   }
 }
+module.exports = MongoConnect
