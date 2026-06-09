@@ -1,7 +1,7 @@
 'use strict'
 const log = require('./logger')
 
-module.exports = class MemCache{
+module.exports = class {
   constructor({ mongo, collection, cacheName, jsonOnly }){
     if(!mongo || !collection) throw `db info not provided`
     this._mongo = mongo, this._collection = collection, this._cache_name = cacheName || collection
@@ -12,12 +12,10 @@ module.exports = class MemCache{
     if(next.operationType == 'insert' || next.operationType == 'replace' || next.operationType == 'update'){
       if(!next?.fullDocument) return
       this._map.set( next.fullDocument._id, next.fullDocument.value )
-      console.log(this._map)
     }
     if(next.operationType == 'delete'){
       if(!next?.documentKey) return
       this._map.delete( next?.documentKey?._id )
-      console.log(this._map)
     }
   }
   async _init(){
@@ -25,7 +23,6 @@ module.exports = class MemCache{
       let status = this._mongo.status()
       if(status) status = await this._mongo.createCollection( this._collection )
       if(status) status = await this._load_map()
-      console.log(this._map)
       if(status){
         this._watch = this._mongo.watch( this._collection )
         this._watch.on('change', (next)=>{
@@ -71,14 +68,14 @@ module.exports = class MemCache{
   }
   set( key, value ){
     if(!key) return
-    if(this._json_only) return setJSON( key, value )
+    if(this._json_only) return this.setJSON( key, value )
     this._map.set( key, value )
     this._mongo.set( this._collection, { _id: key }, { value } )
   }
   setJSON( key, value = {} ){
     try{
       if(!key) return
-      let data = this._map.get( id ) || {}
+      let data = this._map.get( key ) || {}
       data = { ...data,...value }
       this._map.set( key, data )
       this._mongo.set( this._collection, { _id: key }, { value: data } )
